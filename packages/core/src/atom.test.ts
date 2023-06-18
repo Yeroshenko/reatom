@@ -48,7 +48,7 @@ export const isConnected = (ctx: Ctx, anAtom: Atom) => {
 
   if (!cache) return false
 
-  return cache.subs.size + cache.listeners.size > 0
+  return cache.subs.length + cache.listeners.size > 0
 }
 
 test(`action`, () => {
@@ -103,14 +103,14 @@ test(`linking`, () => {
   assert.is(fn.calls.length, 1)
   assert.is(fn.lastInput(), 0)
   assert.is(a2Cache.pubs[0], a1Cache)
-  assert.equal(a1Cache.subs, new Set([a2.__reatom]))
+  assert.equal(a1Cache.subs, [a2.__reatom])
 
   un()
 
   assert.is(a1Cache, ctx.get((read) => read(a1.__reatom))!)
   assert.is(a2Cache, ctx.get((read) => read(a2.__reatom))!)
 
-  assert.is(ctx.get((read) => read(a1.__reatom))!.subs.size, 0)
+  assert.is(ctx.get((read) => read(a1.__reatom))!.subs.length, 0)
   ;`👍` //?
 })
 
@@ -142,18 +142,18 @@ test(`nested deps`, () => {
   }
 
   assert.is(fn.calls.length, 1)
-  assert.equal(
-    ctx.get((read) => read(a1.__reatom))!.subs,
-    new Set([a2.__reatom, a3.__reatom]),
-  )
-  assert.equal(
-    ctx.get((read) => read(a2.__reatom))!.subs,
-    new Set([a4.__reatom, a5.__reatom]),
-  )
-  assert.equal(
-    ctx.get((read) => read(a3.__reatom))!.subs,
-    new Set([a4.__reatom, a5.__reatom]),
-  )
+  assert.equal(ctx.get((read) => read(a1.__reatom))!.subs, [
+    a2.__reatom,
+    a3.__reatom,
+  ])
+  assert.equal(ctx.get((read) => read(a2.__reatom))!.subs, [
+    a4.__reatom,
+    a5.__reatom,
+  ])
+  assert.equal(ctx.get((read) => read(a3.__reatom))!.subs, [
+    a4.__reatom,
+    a5.__reatom,
+  ])
 
   ctx.subscribe((logs) => logs.forEach(({ proto }) => touchedAtoms.push(proto)))
 
@@ -411,7 +411,7 @@ test('subscribe to cached atom', () => {
   ctx.subscribe(a2, () => {})
 
   assert.is(
-    ctx.get((r) => r(a1.__reatom)?.subs.size),
+    ctx.get((r) => r(a1.__reatom)?.subs.length),
     1,
   )
   ;`👍` //?
@@ -459,13 +459,13 @@ test('update propagation for atom with listener', () => {
   assert.is(cb3.lastInput(), 1)
 
   un2()
-  assert.is(ctx.get((r) => r(a2.__reatom))!.subs.size, 0)
+  assert.is(ctx.get((r) => r(a2.__reatom))!.subs.length, 0)
   a1(ctx, 2)
   assert.is(cb2.calls.length, 3)
   assert.is(cb2.lastInput(), 2)
 
   ctx.subscribe(a3, cb3)
-  assert.is(ctx.get((r) => r(a2.__reatom))!.subs.size, 1)
+  assert.is(ctx.get((r) => r(a2.__reatom))!.subs.length, 1)
   ;`👍` //?
 })
 

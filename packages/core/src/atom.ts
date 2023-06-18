@@ -134,7 +134,7 @@ export interface AtomCache<State = any> {
   // nullable state mean cache is dirty (has updated pubs, which could produce new state)
   cause: null | AtomCache
   pubs: Array<AtomCache>
-  readonly subs: Set<AtomProto>
+  readonly subs: Array<AtomProto>
   readonly listeners: Set<Fn>
   error?: unknown
 }
@@ -208,7 +208,7 @@ export const isAction = (thing: any): thing is Action => {
 //   ctx.get((read) => (ctx.get(anAtom), read(anAtom.__reatom)!))
 
 const isConnected = (cache: AtomCache): boolean => {
-  return cache.subs.size + cache.listeners.size > 0
+  return cache.subs.length + cache.listeners.size > 0
 }
 
 const assertFunction = (thing: any) =>
@@ -267,78 +267,85 @@ export const createCtx = ({
 
   let addPatch = (
     { state, proto, pubs, subs, listeners }: AtomCache,
-    cause: AtomCache,
+    cause: null | AtomCache,
   ) => {
     proto.actual = false
     trLogs.push(
       (proto.patch = {
-        state: state,
-        proto: proto,
+        state,
+        proto,
         cause,
-        pubs: pubs,
-        subs: subs,
-        listeners: listeners,
+        pubs,
+        subs,
+        listeners,
       }),
     )
     return proto.patch
   }
 
-  let enqueueComputers = (cache: AtomCache) => {
-    for (let subProto of cache.subs.keys()) {
+  let enqueueComputers = (subs: Array<AtomProto>) => {
+    for (let i = 0; i < subs.length; i++) {
+      let subProto = subs[i]!
       let subCache = subProto.patch ?? read(subProto)!
 
       if (!subProto.patch || subProto.actual) {
-        if (addPatch(subCache, cache).listeners.size === 0) {
-          enqueueComputers(subCache)
+        if (addPatch(subCache, null).listeners.size === 0) {
+          enqueueComputers(subCache.subs)
         }
       }
     }
   }
 
-  let disconnect = (proto: AtomProto, pubPatch: AtomCache): void => {
-    if (pubPatch.subs.delete(proto)) {
-      trRollbacks.push(() => pubPatch.subs.add(proto))
+  // let disconnect = (proto: AtomProto, pubPatch: AtomCache): void => {
+  //   if (pubPatch.subs.delete(proto)) {
+  //     trRollbacks.push(() => pubPatch.subs.add(proto))
 
-      if (!isConnected(pubPatch)) {
-        if (pubPatch.proto.disconnectHooks !== null) {
-          nearEffects.push(...pubPatch.proto.disconnectHooks)
-        }
+  //     if (!isConnected(pubPatch)) {
+  //       if (pubPatch.proto.disconnectHooks !== null) {
+  //         nearEffects.push(...pubPatch.proto.disconnectHooks)
+  //       }
 
-        for (let parentParent of pubPatch.pubs) {
-          disconnect(pubPatch.proto, parentParent)
-        }
-      }
-    }
-  }
+  //       for (let parentParent of pubPatch.pubs) {
+  //         disconnect(pubPatch.proto, parentParent)
+  //       }
+  //     }
+  //   }
+  // }
 
-  let connect = (proto: AtomProto, pubPatch: AtomCache) => {
-    if (!pubPatch.subs.has(proto)) {
-      let wasConnected = isConnected(pubPatch)
-      pubPatch.subs.add(proto)
-      trRollbacks.push(() => pubPatch.subs.delete(proto))
+  // let connect = (proto: AtomProto, pubPatch: AtomCache) => {
+  //   if (!pubPatch.subs.has(proto)) {
+  //     let wasConnected = isConnected(pubPatch)
+  //     pubPatch.subs.add(proto)
+  //     trRollbacks.push(() => pubPatch.subs.delete(proto))
 
-      if (!wasConnected) {
-        if (pubPatch.proto.connectHooks !== null) {
-          nearEffects.push(...pubPatch.proto.connectHooks)
-        }
+  //     if (!wasConnected) {
+  //       if (pubPatch.proto.connectHooks !== null) {
+  //         nearEffects.push(...pubPatch.proto.connectHooks)
+  //       }
 
-        for (let parentParentPatch of pubPatch.pubs) {
-          connect(pubPatch.proto, parentParentPatch)
-        }
-      }
-    }
-  }
+  //       for (let parentParentPatch of pubPatch.pubs) {
+  //         connect(pubPatch.proto, parentParentPatch)
+  //       }
+  //     }
+  //   }
+  // }
 
-  let actualizePubs = (patchCtx: Ctx, patch: AtomCache) => {
+  let actualizePubs = (
+    patchCtx: Ctx,
+    patch: AtomCache,
+    connection: boolean,
+  ) => {
+    connection ||= isConnected(patch)
     let { proto, pubs } = patch
-    let toDisconnect = new Set<AtomProto>()
-    let toConnect = new Set<AtomProto>()
 
     if (
       pubs.length === 0 ||
       pubs.some(
         ({ proto, state }) =>
-          !Object.is(state, (patch.cause = actualize(patchCtx, proto)).state),
+          !Object.is(
+            state,
+            (patch.cause = actualize(patchCtx, proto, true)).state,
+          ),
       )
     ) {
       let newPubs: typeof pubs = []
@@ -346,17 +353,14 @@ export const createCtx = ({
       patchCtx.spy = ({ __reatom: depProto }: Atom, cb?: Fn) => {
         // this changed after computer exit
         if (patch.pubs === pubs) {
-          let depPatch = actualize(patchCtx, depProto)
+          let depPatch = actualize(patchCtx, depProto, true)
           let prevDepPatch =
             newPubs.push(depPatch) <= pubs.length
               ? pubs[newPubs.length - 1]
               : undefined
           let isDepChanged = prevDepPatch?.proto !== depPatch.proto
 
-          if (isDepChanged) {
-            if (prevDepPatch) toDisconnect.add(prevDepPatch.proto)
-            toConnect.add(depProto)
-          }
+          if (connection) depPatch.subs.push(proto)
 
           let state =
             depProto.isAction && !isDepChanged
@@ -376,27 +380,13 @@ export const createCtx = ({
 
       patch.state = patch.proto.computer!(patchCtx as CtxSpy, patch.state)
       patch.pubs = newPubs
-
-      for (let i = newPubs.length; i < pubs.length; i++) {
-        toDisconnect.add(pubs[i]!.proto)
-      }
-
-      if (toDisconnect.size + toConnect.size && isConnected(patch)) {
-        for (let depProto of toDisconnect) {
-          toConnect.has(depProto) ||
-            disconnect(proto, depProto.patch ?? read(depProto)!)
-        }
-
-        for (let depProto of toConnect) {
-          connect(proto, depProto.patch ?? read(depProto)!)
-        }
-      }
     }
   }
 
   let actualize = (
     ctx: Ctx,
     proto: AtomProto,
+    connection: boolean,
     updater?: Fn<[patchCtx: Ctx, patch: AtomCache]>,
   ): AtomCache => {
     let { patch, actual } = proto
@@ -413,7 +403,7 @@ export const createCtx = ({
         proto,
         cause: ctx.cause,
         pubs: [],
-        subs: new Set(),
+        subs: [],
         listeners: new Set(),
       }
     } else if (proto.computer === null && !updating) {
@@ -423,6 +413,11 @@ export const createCtx = ({
     if (!patch || actual) patch = addPatch(cache!, ctx.cause)
 
     let { state } = patch
+    let oldSubs = patch.subs.splice(0)
+    ctx.schedule(() => {
+      // @ts-expect-error
+      patch.subs = oldSubs
+    }, -1)
     let patchCtx: Ctx = {
       get: ctx.get,
       spy: undefined,
@@ -432,7 +427,7 @@ export const createCtx = ({
     }
 
     try {
-      if (proto.computer) actualizePubs(patchCtx, patch)
+      if (proto.computer) actualizePubs(patchCtx, patch, connection)
       if (updating) updater!(patchCtx, patch)
       proto.actual = true
     } catch (error) {
@@ -440,8 +435,8 @@ export const createCtx = ({
     }
 
     if (!Object.is(state, patch.state)) {
-      if (patch.subs.size > 0 && (updating || patch.listeners.size > 0)) {
-        enqueueComputers(patch)
+      if (oldSubs.length > 0 && (updating || patch.listeners.size > 0)) {
+        enqueueComputers(oldSubs)
       }
 
       proto.updateHooks?.forEach((hook) =>
@@ -456,13 +451,13 @@ export const createCtx = ({
     get(atomOrCb) {
       if (isAtom(atomOrCb)) {
         let proto = atomOrCb.__reatom
-        if (inTr) return actualize(this, proto).state
+        if (inTr) return actualize(this, proto, false).state
         let cache = read(proto)
 
         return cache !== undefined &&
           (proto.computer === null || isConnected(cache))
           ? cache.state
-          : this.get(() => actualize(this, proto).state)
+          : this.get(() => actualize(this, proto, false).state)
       }
 
       throwReatomError(trError !== null, 'tr failed')
@@ -478,7 +473,7 @@ export const createCtx = ({
 
         for (let i = 0; i < trLogs.length; i++) {
           let { listeners, proto } = trLogs[i]!
-          if (listeners.size > 0) actualize(this, proto)
+          if (listeners.size > 0) actualize(this, proto, true)
           if (trUpdates.length > 0 /* TODO `&& trLogs.length === i + 1` */) {
             for (let commit of trUpdates.splice(0)) commit(this)
           }
@@ -576,13 +571,13 @@ export const createCtx = ({
 
       if (cache === undefined || !isConnected(cache)) {
         this.get(() => {
-          cache = actualize(this, proto, (patchCtx, patch) => {})
+          cache = actualize(this, proto, true, (patchCtx, patch) => {})
           cache.listeners.add(listener)
           trRollbacks.push(() => proto.patch!.listeners.delete(listener))
           if (proto.connectHooks !== null) {
             nearEffects.push(...proto.connectHooks)
           }
-          for (let pubPatch of cache.pubs) connect(proto, pubPatch)
+          // for (let pubPatch of cache.pubs) connect(proto, pubPatch)
         })
       } else {
         cache.listeners.add(listener)
@@ -601,7 +596,7 @@ export const createCtx = ({
           proto.disconnectHooks && nearEffects.push(...proto.disconnectHooks)
 
           for (let pubCache of cache!.pubs) {
-            disconnect(proto, pubCache)
+            // disconnect(proto, pubCache)
           }
 
           if (!inTr) {
@@ -614,7 +609,7 @@ export const createCtx = ({
     cause: undefined as any,
   }
 
-  ;(ctx.cause = ctx.get(() => actualize(ctx, __root))).cause = null
+  ;(ctx.cause = ctx.get(() => actualize(ctx, __root, false))).cause = null
 
   return ctx
 }
@@ -636,12 +631,17 @@ export function atom<T>(
   let theAtom: any = (ctx: Ctx, update: any) =>
     ctx.get(
       (read, actualize) =>
-        actualize!(ctx, theAtom.__reatom, (patchCtx: Ctx, patch: AtomCache) => {
-          patch.state =
-            typeof update === 'function'
-              ? update(patch.state, patchCtx)
-              : update
-        }).state,
+        actualize!(
+          ctx,
+          theAtom.__reatom,
+          false,
+          (patchCtx: Ctx, patch: AtomCache) => {
+            patch.state =
+              typeof update === 'function'
+                ? update(patch.state, patchCtx)
+                : update
+          },
+        ).state,
     )
   let computer = null
 
