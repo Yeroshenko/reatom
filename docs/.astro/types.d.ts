@@ -201,34 +201,6 @@ declare module 'astro:content' {
 
 	type ContentEntryMap = {
 		"docs": {
-"adapter/npm-cookie-baker.md": {
-	id: "adapter/npm-cookie-baker.md";
-  slug: "adapter/npm-cookie-baker";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"adapter/npm-history.md": {
-	id: "adapter/npm-history.md";
-  slug: "adapter/npm-history";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"adapter/npm-react.md": {
-	id: "adapter/npm-react.md";
-  slug: "adapter/npm-react";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"adapter/npm-svelte.md": {
-	id: "adapter/npm-svelte.md";
-  slug: "adapter/npm-svelte";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
 "compat/core-v1.md": {
 	id: "compat/core-v1.md";
   slug: "compat/core-v1";
@@ -271,65 +243,30 @@ declare module 'astro:content' {
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"general/what-is-state-manager.md": {
-	id: "general/what-is-state-manager.md";
-  slug: "general/what-is-state-manager";
+"getting-started/debugging.md": {
+	id: "getting-started/debugging.md";
+  slug: "getting-started/debugging";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"guides/architecture.md": {
-	id: "guides/architecture.md";
-  slug: "guides/architecture";
+"getting-started/learning.md": {
+	id: "getting-started/learning.md";
+  slug: "getting-started/learning";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"guides/atomization.md": {
-	id: "guides/atomization.md";
-  slug: "guides/atomization";
+"getting-started/setup.md": {
+	id: "getting-started/setup.md";
+  slug: "getting-started/setup";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"guides/contributing.md": {
-	id: "guides/contributing.md";
-  slug: "guides/contributing";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"guides/custom-operator.md": {
-	id: "guides/custom-operator.md";
-  slug: "guides/custom-operator";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"guides/debug.md": {
-	id: "guides/debug.md";
-  slug: "guides/debug";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"guides/lifecycle.md": {
-	id: "guides/lifecycle.md";
-  slug: "guides/lifecycle";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"guides/naming.md": {
-	id: "guides/naming.md";
-  slug: "guides/naming";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
-"guides/typescript.md": {
-	id: "guides/typescript.md";
-  slug: "guides/typescript";
+"getting-started/testing.md": {
+	id: "getting-started/testing.md";
+  slug: "getting-started/testing";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
@@ -348,128 +285,198 @@ declare module 'astro:content' {
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/async.md": {
-	id: "package/async.md";
-  slug: "package/async";
+"packages/async.md": {
+	id: "packages/async.md";
+  slug: "packages/async";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/effects.md": {
-	id: "package/effects.md";
-  slug: "package/effects";
+"packages/effects.md": {
+	id: "packages/effects.md";
+  slug: "packages/effects";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/eslint-plugin.md": {
-	id: "package/eslint-plugin.md";
-  slug: "package/eslint-plugin";
+"packages/eslint-plugin.md": {
+	id: "packages/eslint-plugin.md";
+  slug: "packages/eslint-plugin";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/form-web.md": {
-	id: "package/form-web.md";
-  slug: "package/form-web";
+"packages/form-web.md": {
+	id: "packages/form-web.md";
+  slug: "packages/form-web";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/form.md": {
-	id: "package/form.md";
-  slug: "package/form";
+"packages/form.md": {
+	id: "packages/form.md";
+  slug: "packages/form";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/framework.md": {
-	id: "package/framework.md";
-  slug: "package/framework";
+"packages/framework.md": {
+	id: "packages/framework.md";
+  slug: "packages/framework";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/hooks.md": {
-	id: "package/hooks.md";
-  slug: "package/hooks";
+"packages/hooks.md": {
+	id: "packages/hooks.md";
+  slug: "packages/hooks";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/jsx.md": {
-	id: "package/jsx.md";
-  slug: "package/jsx";
+"packages/jsx.md": {
+	id: "packages/jsx.md";
+  slug: "packages/jsx";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/lens.md": {
-	id: "package/lens.md";
-  slug: "package/lens";
+"packages/lens.md": {
+	id: "packages/lens.md";
+  slug: "packages/lens";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/logger.md": {
-	id: "package/logger.md";
-  slug: "package/logger";
+"packages/logger.md": {
+	id: "packages/logger.md";
+  slug: "packages/logger";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/persist-web-storage.md": {
-	id: "package/persist-web-storage.md";
-  slug: "package/persist-web-storage";
+"packages/npm-cookie-baker.md": {
+	id: "packages/npm-cookie-baker.md";
+  slug: "packages/npm-cookie-baker";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/persist.md": {
-	id: "package/persist.md";
-  slug: "package/persist";
+"packages/npm-history.md": {
+	id: "packages/npm-history.md";
+  slug: "packages/npm-history";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/primitives.md": {
-	id: "package/primitives.md";
-  slug: "package/primitives";
+"packages/npm-react.md": {
+	id: "packages/npm-react.md";
+  slug: "packages/npm-react";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/testing.md": {
-	id: "package/testing.md";
-  slug: "package/testing";
+"packages/npm-svelte.md": {
+	id: "packages/npm-svelte.md";
+  slug: "packages/npm-svelte";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/timer.md": {
-	id: "package/timer.md";
-  slug: "package/timer";
+"packages/persist-web-storage.md": {
+	id: "packages/persist-web-storage.md";
+  slug: "packages/persist-web-storage";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/undo.md": {
-	id: "package/undo.md";
-  slug: "package/undo";
+"packages/persist.md": {
+	id: "packages/persist.md";
+  slug: "packages/persist";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/url.md": {
-	id: "package/url.md";
-  slug: "package/url";
+"packages/primitives.md": {
+	id: "packages/primitives.md";
+  slug: "packages/primitives";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".md"] };
-"package/utils.md": {
-	id: "package/utils.md";
-  slug: "package/utils";
+"packages/testing.md": {
+	id: "packages/testing.md";
+  slug: "packages/testing";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"packages/timer.md": {
+	id: "packages/timer.md";
+  slug: "packages/timer";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"packages/undo.md": {
+	id: "packages/undo.md";
+  slug: "packages/undo";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"packages/url.md": {
+	id: "packages/url.md";
+  slug: "packages/url";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"packages/utils.md": {
+	id: "packages/utils.md";
+  slug: "packages/utils";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"packages/web.md": {
+	id: "packages/web.md";
+  slug: "packages/web";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"recipes/data-fetching.md": {
+	id: "recipes/data-fetching.md";
+  slug: "recipes/data-fetching";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"recipes/data-persisting.md": {
+	id: "recipes/data-persisting.md";
+  slug: "recipes/data-persisting";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"recipes/forms.md": {
+	id: "recipes/forms.md";
+  slug: "recipes/forms";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"recipes/share-state.md": {
+	id: "recipes/share-state.md";
+  slug: "recipes/share-state";
+  body: string;
+  collection: "docs";
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] };
+"recipes/undo-redo.md": {
+	id: "recipes/undo-redo.md";
+  slug: "recipes/undo-redo";
   body: string;
   collection: "docs";
   data: InferEntrySchema<"docs">
@@ -481,13 +488,6 @@ declare module 'astro:content' {
   collection: "docs";
   data: InferEntrySchema<"docs">
 } & { render(): Render[".mdx"] };
-"tutorial.md": {
-	id: "tutorial.md";
-  slug: "tutorial";
-  body: string;
-  collection: "docs";
-  data: InferEntrySchema<"docs">
-} & { render(): Render[".md"] };
 };
 
 	};

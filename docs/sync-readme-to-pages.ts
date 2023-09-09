@@ -6,10 +6,10 @@ const TYPES: Record<string, string> = {
   'core-v2': 'compat',
   'react-v1': 'compat',
   'react-v2': 'compat',
-  'npm-cookie-baker': 'adapter',
-  'npm-history': 'adapter',
-  'npm-react': 'adapter',
-  'npm-svelte': 'adapter',
+  'npm-cookie-baker': 'packages',
+  'npm-history': 'packages',
+  'npm-react': 'packages',
+  'npm-svelte': 'packages',
 }
 
 const root = path.join(process.cwd(), '..')
@@ -54,7 +54,7 @@ for (const packageName of packages) {
           'src',
           'content',
           'docs',
-          TYPES[packageName] ?? 'package',
+          TYPES[packageName] ?? 'packages',
           `${packageName}.md`,
         )
   let content = await fs.readFile(readmePath, 'utf8')
